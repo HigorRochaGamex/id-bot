@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>IDs Itens Emojis</title>
+<style>
+  body {
+    background-color: #000;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    padding: 20px;
+  }
+  h1 {
+    margin-bottom: 20px;
+  }
+  #search-container {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  input {
+    padding: 8px;
+    border-radius: 4px;
+    border: none;
+    font-size: 14px;
+  }
+  button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    background-color: #444;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  button:hover {
+    background-color: #666;
+  }
+  #items-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
+    border-bottom: 1px solid #333;
+  }
+  .item img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    border: 1px solid #555;
+    border-radius: 6px;
+    background: #222;
+  }
+  .info {
+    flex-grow: 1;
+  }
+  .id {
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 3px;
+  }
+  .name {
+    font-size: 14px;
+    color: #ccc;
+  }
+  button.copy-btn {
+    background-color: #444;
+    border: none;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  button.copy-btn:hover {
+    background-color: #666;
+  }
+  .copied-msg {
+    color: #4CAF50;
+    font-size: 13px;
+    margin-left: 8px;
+  }
+</style>
+</head>
+<body>
+
+<h1>ID dos Itens (Clã Piratas)</h1>
+
+<div id="search-container">
+  <input type="text" id="search-number" placeholder="Pesquisar por ID" />
+  <input type="text" id="search-name" placeholder="Pesquisar por nome" />
+  <button onclick="filtrarItens()">Pesquisar</button>
+  <button onclick="limparFiltro()">Limpar</button>
+</div>
+
+<div id="items-container"></div>
+
+<script>
+// Lista de arquivos e nomes traduzidos
+const itensDados = [
+  { filename: "1Allay.png", name: "Allay" },
+  { filename: "2Ancient_Debris.png", name: "Detritos Ancestrais" },
+  { filename: "3Beacon.png", name: "Farol" },
+  { filename: "4Birch_Log.png", name: "Tronco de Bétula" },
+  { filename: "5Blackstone.png", name: "Pedra Negra" },
+  { filename: "6Blast_Furnace.png", name: "Forno de Explosão" },
+  { filename: "7Book.png", name: "Livro" },
+  { filename: "8Bookshelf.png", name: "Estante de Livros" },
+  { filename: "9Chest.png", name: "Baú" },
+  { filename: "10Coal.png", name: "Carvão" },
+  { filename: "11Cobbled_Deepslate.png", name: "Lajota de Pedra de Deepslate" },
+  { filename: "12Cobblestone.png", name: "Pedra Batida" },
+  { filename: "13Cobweb.png", name: "Teia" },
+  { filename: "14Cooked_Beef.png", name: "Carne Cozida" },
+  { filename: "15Cooked_Mutton.png", name: "Carne de Carneiro Cozida" },
+  { filename: "16Cooked_Porkchop.png", name: "Costela de Porco Cozida" },
+  { filename: "17Cooked_Salmon.png", name: "Salmão Cozido" },
+  { filename: "18Dark_Oak_Log.png", name: "Tronco de Carvalho Escuro" },
+  { filename: "19Diamond.png", name: "Diamante" },
+  { filename: "20Diamond_Axe.png", name: "Machado de Diamante" },
+  { filename: "21Diamond_Block.png", name: "Bloco de Diamante" },
+  { filename: "22Diamond_Boots.png", name: "Botas de Diamante" },
+  { filename: "23Diamond_Chestplate - Copia.png", name: "Peitoral de Diamante (Cópia)" },
+  { filename: "24Diamond_Chestplate.png", name: "Peitoral de Diamante" },
+  { filename: "25Diamond_Helmet.png", name: "Capacete de Diamante" },
+  { filename: "26Diamond_Leggings.png", name: "Calças de Diamante" },
+  { filename: "27Diamond_Pickaxe.png", name: "Picareta de Diamante" },
+  { filename: "28Diamond_Shovel.png", name: " Pá de Diamante" },
+  { filename: "29Diamond_Sword.png", name: "Espada de Diamante" },
+  { filename: "30Dragon_Head.png", name: "Cabeça de Dragão" },
+  { filename: "31Emerald.png", name: "Esmeralda" },
+  { filename: "32Emerald_Block.png", name: "Bloco de Esmeralda" },
+  { filename: "33Enchanted_Book.png", name: "Livro Encantado" },
+  { filename: "34Enchanted_Golden_Apple.png", name: "Maçã Dourada Encantada" },
+  { filename: "35Enchanting_Table.png", name: "Mesa de Encantamentos" },
+  { filename: "36Ender_Pearl.png", name: " Pérola do Fim" },
+  { filename: "37End_Crystal.png", name: "Cristal do Fim" },
+  { filename: "38Firework_Rocket.png", name: "Foguete de Fogos de Artifício" },
+  { filename: "39Fletching_Table.png", name: "Mesa de Fletching" },
+  { filename: "40Flint.png", name: "Sílex" },
+  { filename: "41Golden_Apple.png", name: "Maçã Dourada" },
+  { filename: "42Gold_Block.png", name: "Bloco de Ouro" },
+  { filename: "43Hay_Block.png", name: "Bloco de Feno" },
+  { filename: "44Heavy_Core.png", name: "Núcleo Pesado" },
+  { filename: "45Hopper.png", name: "Funil" },
+  { filename: "46Infested_Stone.png", name: "Pedra Infectada" },
+  { filename: "47Infested_Stone_Bricks.png", name: "Tijolos de Pedra Infectada" },
+  { filename: "48Iron_Block.png", name: "Bloco de Ferro" },
+  { filename: "49Iron_Ingot.png", name: "Lingote de Ferro" },
+  { filename: "50Mace.png", name: "Maça" },
+  { filename: "51Mostly_Hydrated_Ghast.png", name: "Ghast Hidratado" },
+  { filename: "52Name_Tag.png", name: "Etiqueta de Nome" },
+  { filename: "53Netherite_Axe.png", name: "Machado de Netherita" },
+  { filename: "54Netherite_Boots.png", name: "Botas de Netherita" },
+  { filename: "55Netherite_Chestplate.png", name: "Peitoral de Netherita" },
+  { filename: "56Netherite_Helmet.png", name: "Capacete de Netherita" },
+  { filename: "57Netherite_Leggings.png", name: "Calças de Netherita" },
+  { filename: "58Netherite_Pickaxe.png", name: "Picareta de Netherita" },
+  { filename: "59Netherite_Scrap.png", name: "Farelo de Netherita" },
+  { filename: "60Netherite_Shovel.png", name: "Pá de Netherita" },
+  { filename: "61Netherite_Sword.png", name: "Espada de Netherita" },
+  { filename: "62Netherite_Upgrade_Smithing_Template.png", name: "Template de Upgrade de Netherita" },
+  { filename: "63Nether_Star.png", name: "Estrela do Nether" },
+  { filename: "64Nether_Wart.png", name: "Broto do Nether" },
+  { filename: "65Pale_Oak_Log.png", name: "Tronco de Carvalho Claro" },
+  { filename: "66Potion_Long_Strength.png", name: "Poção de Força Longa" },
+  { filename: "67shulker.png", name: "Shulker" },
+  { filename: "68Trident.png", name: "Tridente" },
+  { filename: "69Wind_Charge.png", name: "Carga de Vento" },
+  { filename: "70Oak_Log.png", name: "Madeira de Carvalho" }  
+];
+
+// Função para criar os itens no DOM
+const container = document.getElementById("items-container");
+const itens = [];
+
+itensDados.forEach((item) => {
+  const idMatch = item.filename.match(/^(\d+)/);
+  const id = idMatch ? parseInt(idMatch[1], 10) : null;
+  const name = item.name;
+
+  const div = document.createElement("div");
+  div.className = "item";
+
+  div.innerHTML = `
+    <img src="img/${item.filename}" alt="${name}" />
+    <div class="info">
+      <div class="id">ID = ${id}</div>
+      <div class="name">${name}</div>
+    </div>
+    <button class="copy-btn" data-id="${id}">Copiar ID</button>
+    <span class="copied-msg" style="display:none;">Copiado!</span>
+  `;
+
+  itens.push({element: div, data: {id, name}});
+  container.appendChild(div);
+});
+
+// Evento de copiar
+container.addEventListener("click", (e) => {
+  if (e.target.classList.contains("copy-btn")) {
+    const id = e.target.getAttribute("data-id");
+    navigator.clipboard.writeText(id).then(() => {
+      const msg = e.target.nextElementSibling;
+      msg.style.display = "inline";
+      setTimeout(() => {
+        msg.style.display = "none";
+      }, 1500);
+    }).catch(() => {
+      alert("Erro ao copiar o ID.");
+    });
+  }
+});
+
+// Filtrar itens
+function filtrarItens() {
+  const filtroId = document.getElementById("search-number").value.trim();
+  const filtroNome = document.getElementById("search-name").value.trim().toLowerCase();
+
+  itens.forEach(({element, data}) => {
+    const matchId = filtroId === '' || data.id.toString().includes(filtroId);
+    const matchNome = filtroNome === '' || data.name.toLowerCase().includes(filtroNome);
+    if (matchId && matchNome) {
+      element.style.display = '';
+    } else {
+      element.style.display = 'none';
+    }
+  });
+}
+
+// Limpar filtros
+function limparFiltro() {
+  document.getElementById("search-number").value = '';
+  document.getElementById("search-name").value = '';
+  itens.forEach(({element}) => {
+    element.style.display = '';
+  });
+}
+</script>
+
+</body>
+</html>
